@@ -44,7 +44,6 @@ onMounted(() => {
 
 <template>
   <section id="home" class="min-h-screen relative">
-    
     <IntroOverlay @ready-to-start="isHeroReadyToStart = true" />
 
     <div
@@ -53,10 +52,11 @@ onMounted(() => {
       <HeroSection :start-animation="isHeroReadyToStart" />
     </div>
 
-    <SkillsSection id="skills" />
+    <div class="overflow-hidden">
+      <SkillsSection id="skills" />
+    </div>
 
     <ContactSection id="contact" />
-    
   </section>
 </template>
 
