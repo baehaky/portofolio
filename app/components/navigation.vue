@@ -1,131 +1,158 @@
 <script setup lang="ts">
-import { useThemeStore } from "../../stores/theme";
-import { ref } from "vue";
+import { useThemeStore } from "~~/stores/theme";
+import gsap from "gsap";
 
-const isMenuOpen = ref(false);
 const themeStore = useThemeStore();
+const isMenuOpen = ref(false);
+const navEl = ref<HTMLElement | null>(null);
 
-interface navItems {
-  name: string;
-  path: string;
+onMounted(() => {
+  gsap.from(navEl.value, {
+    y: -60,
+    opacity: 0,
+    duration: 0.7,
+    ease: "power3.out",
+    delay: 0.1,
+  });
+
+  gsap.from(".nav-link", {
+    opacity: 0,
+    y: -10,
+    stagger: 0.08,
+    duration: 0.5,
+    ease: "power2.out",
+    delay: 0.4,
+  });
+});
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value;
+  if (isMenuOpen.value) {
+    gsap.from(".mobile-link", {
+      opacity: 0,
+      x: -20,
+      stagger: 0.08,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  }
 }
 
-const navItems: navItems[] = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Portofolio", path: "/portofolio" },
-  { name: "Blog", path: "/blog" },
-  { name: "Contact", path: "/contact" },
+function toggleTheme() {
+  gsap.to(".theme-icon", {
+    scale: 0,
+    rotate: 90,
+    duration: 0.2,
+    ease: "power2.in",
+    onComplete: () => {
+      themeStore.toggleTheme();
+      gsap.fromTo(
+        ".theme-icon",
+        { scale: 0, rotate: -90 },
+        { scale: 1, rotate: 0, duration: 0.3, ease: "back.out(2)" },
+      );
+    },
+  });
+}
+
+const links = [
+  { label: "Home", target: "home" },
+  { label: "Skills", target: "skills" },
+  { label: "Contact", target: "contact" },
 ];
+
+function scrollToSection(id: string) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" });
+  }
+
+  if (isMenuOpen.value) {
+    isMenuOpen.value = false;
+  }
+}
 </script>
 
 <template>
   <nav
-    class="border-b bg-white/10 dark:bg-black dark:backdrop-blur-sm backdrop-blur-xl border-gray-200/50 dark:border-gray-800 shadow-sm relative z-50 transition-colors duration-300"
+    ref="navEl"
+    class="backdrop-blur-md bg-white/80 dark:bg-black/95 border-b border-gray-200/60 dark:border-gray-800/60 transition-colors duration-300"
   >
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto lg:px-10 sm:px-7 px-4">
       <div class="flex items-center justify-between h-16">
-        <!-- Logo -->
         <NuxtLink
-          class="flex items-center space-x-2 text-gray-900 dark:text-white group"
           to="/"
+          class="font-bold text-lg tracking-tight bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
         >
-          <h1
-            class="text-2xl font-bold font-lobster tracking-wide transition-transform duration-500 ease-out group-hover:scale-105"
-          >
-            Baehaky
-          </h1>
+          Baehaky
         </NuxtLink>
 
-        <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center space-x-2 lg:space-x-4">
-          <template v-for="(item, index) in navItems" :key="index">
-            <NuxtLink
-              class="relative px-4 py-2 rounded-md text-sm dark:text-gray-400 transition-all duration-300 ease-out hover:text-black dark:hover:text-white hover:-translate-y-0.5 active:translate-y-0"
-              active-class="text-black font-bold dark:text-white bg-gray-200/70 dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10  "
-              :to="item.path"
-            >
-              {{ item.name }}
-            </NuxtLink>
-          </template>
+        <div class="hidden md:flex items-center gap-6">
+          <a
+            v-for="link in links"
+            :key="link.target"
+            href="javascript:void(0)"
+            @click.prevent="scrollToSection(link.target)"
+            class="nav-link cursor-pointer text-sm font-medium transition-colors duration-200 relative group text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+          >
+            {{ link.label }}
+            <span
+              class="absolute -bottom-0.5 left-0 h-px bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 w-0 group-hover:w-full"
+            />
+          </a>
         </div>
 
-        <!-- Actions -->
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center gap-3">
           <button
-            @click="themeStore.toggleTheme()"
-            class="focus:outline-none bg-gray-100 dark:bg-gray-800 text-gray-600 hover:rotate-12 dark:text-gray-300 flex items-center justify-center py-2 px-2 rounded-md transition-all duration-300 hover:scale-110 hover:text-black dark:hover:text-white active:scale-95 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10"
-            aria-label="Toggle Theme"
+            @click="toggleTheme"
+            class="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+            :aria-label="
+              themeStore.isDark ? 'Switch to light mode' : 'Switch to dark mode'
+            "
           >
-            <transition name="fade" mode="out-in">
+            <span class="theme-icon inline-flex">
               <Icon
-                v-if="themeStore.isDark"
-                name="material-symbols:dark-mode-outline"
-                size="20"
-                class="transition-transform duration-500"
+                :name="
+                  themeStore.isDark ? 'mdi:weather-sunny' : 'mdi:weather-night'
+                "
+                size="22"
               />
-              <Icon
-                v-else
-                name="material-symbols:sunny-outline-rounded"
-                size="20"
-                class="transition-transform duration-300 hover:rotate-90"
-              />
-            </transition>
+            </span>
           </button>
 
           <button
-            @click="isMenuOpen = !isMenuOpen"
-            class="md:hidden focus:outline-none flex items-center justify-center p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white bg-gray-100 dark:bg-gray-800 rounded-md transition-all duration-300 hover:scale-105 active:scale-95 ring-1 ring-gray-900/5 dark:ring-white/10"
-            aria-label="Toggle Menu"
+            @click="toggleMenu"
+            class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+            aria-label="Toggle menu"
           >
-            <Icon
-              v-if="isMenuOpen"
-              name="material-symbols:close-rounded"
-              size="20"
-              class="transition-transform duration-300 rotate-90"
-            />
-            <Icon
-              v-else
-              name="material-symbols:menu-rounded"
-              size="20"
-              class="transition-transform duration-500 rotate-90"
-            />
+            <Icon :name="isMenuOpen ? 'mdi:close' : 'mdi:menu'" size="20" />
           </button>
         </div>
       </div>
-    </div>
 
-    <transition
-      enter-active-class="transition-all duration-300 ease-out"
-      enter-from-class="opacity-0 -translate-y-4 scale-95"
-      enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in"
-      leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 -translate-y-4 scale-95"
-    >
-      <div
-        v-if="isMenuOpen"
-        class="md:hidden absolute top-full left-0 w-full bg-white/95 dark:bg-black/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-800 shadow-2xl origin-top"
+      <Transition
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
       >
-        <div class="px-4 py-6 space-y-2">
-          <template v-for="(item, index) in navItems" :key="index">
-            <NuxtLink
-              @click="isMenuOpen = false"
-              class="flex items-center px-4 py-3.5 rounded-2xl text-base font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800/80 transition-all duration-300 ease-out hover:pl-6"
-              active-class="text-black dark:text-white font-semibold bg-gray-100 dark:bg-gray-800 shadow-sm"
-              :to="item.path"
-            >
-              {{ item.name }}
-            </NuxtLink>
-          </template>
+        <div v-if="isMenuOpen" class="md:hidden pb-4 pt-2 flex flex-col gap-1">
+          <a
+            v-for="link in links"
+            :key="link.target"
+            href="javascript:void(0)"
+            @click.prevent="scrollToSection(link.target)"
+            class="nav-link cursor-pointer text-sm font-medium transition-colors duration-200 relative group text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+          >
+            {{ link.label }}
+            <span
+              class="absolute -bottom-0.5 left-0 h-px bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 w-0 group-hover:w-full"
+            />
+          </a>
         </div>
-      </div>
-    </transition>
+      </Transition>
+    </div>
   </nav>
 </template>
-
-<style scoped>
-.font-lobster {
-  font-family: "Lobster Two", cursive;
-}
-</style>

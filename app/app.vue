@@ -14,7 +14,10 @@ onMounted(() => {
   </NuxtLayout>
 </template>
 
-<style scoped>
+<style>
+html {
+  scroll-behavior: smooth;
+}
 * {
   font-family: "Inter", sans-serif;
 }

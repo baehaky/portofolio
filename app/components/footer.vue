@@ -24,15 +24,15 @@ const socialsMedia: socialMedia[] = [
 
 const navItems: navItems[] = [
   { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Portofolio", path: "/portofolio" },
-  { name: "Blog", path: "/blog" },
+  // { name: "About", path: "/about" },
+  // { name: "Portofolio", path: "/portofolio" },
+  // { name: "Blog", path: "/blog" },
   { name: "Contact", path: "/contact" },
 ];
 </script>
 
 <template>
-  <footer class="bg-gray-100 dark:bg-gray-900 border-t border-gray-400/40">
+  <footer class="bg-gray-100 dark:bg-black border-t border-gray-400/40">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
