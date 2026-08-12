@@ -1,7 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: import.meta.env.IS_PROD },
+  devtools: { enabled: false },
+  css: ["lenis/dist/lenis.css"],
+  app: {
+    head: {
+      script: [
+        {
+          innerHTML: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})();`,
+          tagPriority: "critical",
+        },
+      ],
+    },
+  },
   runtimeConfig: {
     public: {
       emailjsServiceId: import.meta.env.NUXT_PUBLIC_EMAILJS_SERVICE_ID,

@@ -12,43 +12,66 @@ const skillPanelRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
   const ctx = gsap.context(() => {
-    const techPanel = techPanelRef.value;
-    const skillPanel = skillPanelRef.value;
-    if (!techPanel || !skillPanel) return;
+    const mm = gsap.matchMedia();
 
-    gsap.set(techPanel, { xPercent: 100 });
+    mm.add(
+      "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const techPanel = techPanelRef.value;
+        const skillPanel = skillPanelRef.value;
+        if (!techPanel || !skillPanel) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.value,
-        start: "top top",
-        end: "+=200%",
-        pin: true,
-        scrub: 0.8,
-        anticipatePin: 1,
+        gsap.set(techPanel, { xPercent: 100 });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.value,
+            start: "top top",
+            end: "+=200%",
+            pin: true,
+            scrub: 0.8,
+            anticipatePin: 1,
+          },
+        });
+
+        tl.to({}, { duration: 0.4 });
+        tl.to(techPanel, { xPercent: 0, ease: "power2.inOut", duration: 0.4 }, ">");
+
+        tl.fromTo(
+          techPanel.querySelectorAll(".skill-chip"),
+          {
+            opacity: 0,
+            x: 24,
+          },
+          {
+            opacity: 1,
+            x: 0,
+            stagger: 0.04,
+            duration: 0.3,
+            ease: "power2.out",
+          },
+          "<0.15",
+        );
+        tl.to({}, { duration: 0.6 });
       },
-    });
-
-    tl.to({}, { duration: 0.4 });
-    tl.to(techPanel, { xPercent: 0, ease: "power2.inOut", duration: 0.4 }, ">");
-
-    // PERBAIKAN: Gunakan fromTo agar opacity terjamin kembali ke 1
-    tl.fromTo(
-      techPanel.querySelectorAll(".skill-chip"),
-      {
-        opacity: 0,
-        x: 24,
-      },
-      {
-        opacity: 1,
-        x: 0,
-        stagger: 0.04,
-        duration: 0.3,
-        ease: "power2.out",
-      },
-      "<0.15",
     );
-    tl.to({}, { duration: 0.6 });
+
+    mm.add(
+      "(max-width: 767.98px) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const chips = gsap.utils.toArray<HTMLElement>(".skill-chip");
+        chips.forEach((el, i) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 16,
+            duration: 0.5,
+            ease: "power3.out",
+            delay: i * 0.04,
+            scrollTrigger: { trigger: el, start: "top 90%" },
+          });
+        });
+      },
+    );
   }, sectionRef.value!);
 
   onUnmounted(() => ctx.revert());
@@ -60,10 +83,10 @@ onMounted(() => {
     ref="sectionRef"
     class="relative overflow-hidden bg-white dark:bg-[#0a0a0f] text-neutral-900 dark:text-white"
   >
-    <div class="relative h-screen overflow-hidden">
+    <div class="relative md:h-screen overflow-hidden">
       <div
         ref="skillPanelRef"
-        class="absolute inset-0 z-[1] flex flex-col justify-center px-8 md:px-20 py-16 bg-white dark:bg-[#0a0a0f]"
+        class="relative md:absolute inset-0 z-[1] flex flex-col justify-center px-8 md:px-20 py-16 bg-white dark:bg-[#0a0a0f]"
       >
         <p
           class="text-[11px] tracking-[0.18em] uppercase font-medium text-neutral-400 dark:text-neutral-600"
@@ -98,7 +121,7 @@ onMounted(() => {
       <!-- Panel 2: Technologies -->
       <div
         ref="techPanelRef"
-        class="absolute inset-0 z-[2] flex flex-col justify-center px-8 md:px-20 py-16 bg-neutral-50 dark:bg-[#0d0d14] border-l border-neutral-200 dark:border-[#1e1e2e]"
+        class="relative md:absolute inset-0 z-[2] flex flex-col justify-center px-8 md:px-20 py-16 bg-neutral-50 dark:bg-[#0d0d14] border-l border-neutral-200 dark:border-[#1e1e2e]"
       >
         <div class="flex items-center gap-3">
           <p
@@ -139,7 +162,7 @@ onMounted(() => {
 
       <!-- Scroll hint -->
       <div
-        class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-neutral-300 dark:text-neutral-700 pointer-events-none select-none"
+        class="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex-col items-center gap-2 text-neutral-300 dark:text-neutral-700 pointer-events-none select-none"
       >
         <span class="text-[10px] tracking-widest uppercase">scroll</span>
         <span class="scroll-caret" />

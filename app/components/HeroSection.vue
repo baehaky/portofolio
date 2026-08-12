@@ -9,71 +9,78 @@ let heroTl: GSAPTimeline;
 
 onMounted(() => {
   ctx = gsap.context(() => {
-    heroTl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+    const mm = gsap.matchMedia();
+    mm.reducedMotion = "reduce";
 
-    heroTl
-      .from(".status-pill", { opacity: 0, y: 16, duration: 0.5 })
-      .from(".hero-eyebrow", { opacity: 0, y: 12, duration: 0.4 }, "-=0.2")
-      .from(".hero-name", { opacity: 0, y: 32, duration: 0.6 }, "-=0.2")
-      .from(".hero-role", { opacity: 0, y: 32, duration: 0.6 }, "-=0.4")
-      .from(".hero-tags", { opacity: 0, y: 16, duration: 0.5 }, "-=0.3")
-      .from(".hero-desc", { opacity: 0, y: 20, duration: 0.5 }, "-=0.3")
-      .from(".hero-buttons", { opacity: 0, y: 16, duration: 0.4 }, "-=0.2")
-      .from(
-        ".stat-item",
-        { opacity: 0, y: 12, stagger: 0.1, duration: 0.4 },
-        "-=0.2",
-      )
-      .from(
-        ".bg-blob",
-        {
-          opacity: 0,
-          scale: 0.6,
-          stagger: 0.15,
-          duration: 1.2,
-          ease: "power2.out",
-        },
-        0,
-      );
+    mm.add("(min-width: 1px)", () => {
+      heroTl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
 
-    // Continuous blob float
-    gsap.to(".bg-blob-1", {
-      y: -28,
-      x: 10,
-      scale: 1.15,
-      duration: 7,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-    gsap.to(".bg-blob-2", {
-      y: 22,
-      x: -14,
-      scale: 1.2,
-      duration: 5.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      delay: 1,
-    });
-    gsap.to(".bg-blob-3", {
-      y: -16,
-      x: 8,
-      scale: 1.3,
-      duration: 6,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      delay: 2,
+      heroTl
+        .from(".status-pill", { opacity: 0, y: 16, duration: 0.5 })
+        .from(".hero-eyebrow", { opacity: 0, y: 12, duration: 0.4 }, "-=0.2")
+        .from(".hero-name", { opacity: 0, y: 32, duration: 0.6 }, "-=0.2")
+        .from(".hero-role", { opacity: 0, y: 32, duration: 0.6 }, "-=0.4")
+        .from(".hero-tags", { opacity: 0, y: 16, duration: 0.5 }, "-=0.3")
+        .from(".hero-desc", { opacity: 0, y: 20, duration: 0.5 }, "-=0.3")
+        .from(".hero-buttons", { opacity: 0, y: 16, duration: 0.4 }, "-=0.2")
+        .from(
+          ".stat-item",
+          { opacity: 0, y: 12, stagger: 0.1, duration: 0.4 },
+          "-=0.2",
+        )
+        .from(
+          ".bg-blob",
+          {
+            opacity: 0,
+            scale: 0.6,
+            stagger: 0.15,
+            duration: 1.2,
+            ease: "power2.out",
+          },
+          0,
+        );
     });
 
-    // Status dot pulse
-    gsap.to(".status-dot", {
-      scale: 1.3,
-      duration: 1,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
+    mm.add("(min-width: 768px)", () => {
+      // Continuous blob float (desktop only to save GPU on mobile)
+      gsap.to(".bg-blob-1", {
+        y: -28,
+        x: 10,
+        scale: 1.15,
+        duration: 7,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+      gsap.to(".bg-blob-2", {
+        y: 22,
+        x: -14,
+        scale: 1.2,
+        duration: 5.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 1,
+      });
+      gsap.to(".bg-blob-3", {
+        y: -16,
+        x: 8,
+        scale: 1.3,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: 2,
+      });
+
+      // Status dot pulse
+      gsap.to(".status-dot", {
+        scale: 1.3,
+        duration: 1,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
     });
   });
 });

@@ -5,36 +5,54 @@ import gsap from "gsap";
 const themeStore = useThemeStore();
 const isMenuOpen = ref(false);
 const navEl = ref<HTMLElement | null>(null);
+let mobileCtx: gsap.Context | null = null;
 
 onMounted(() => {
-  gsap.from(navEl.value, {
-    y: -60,
-    opacity: 0,
-    duration: 0.7,
-    ease: "power3.out",
-    delay: 0.1,
+  const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+    mm.reducedMotion = "reduce";
+
+    mm.add("(min-width: 1px)", () => {
+      gsap.from(navEl.value, {
+        y: -60,
+        opacity: 0,
+        duration: 0.7,
+        ease: "power3.out",
+        delay: 0.1,
+      });
+
+      gsap.from(".nav-link", {
+        opacity: 0,
+        y: -10,
+        stagger: 0.08,
+        duration: 0.5,
+        ease: "power2.out",
+        delay: 0.4,
+      });
+    });
   });
 
-  gsap.from(".nav-link", {
-    opacity: 0,
-    y: -10,
-    stagger: 0.08,
-    duration: 0.5,
-    ease: "power2.out",
-    delay: 0.4,
+  onUnmounted(() => {
+    ctx.revert();
+    mobileCtx?.revert();
   });
 });
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value;
   if (isMenuOpen.value) {
-    gsap.from(".mobile-link", {
-      opacity: 0,
-      x: -20,
-      stagger: 0.08,
-      duration: 0.4,
-      ease: "power2.out",
+    mobileCtx = gsap.context(() => {
+      gsap.from(".mobile-link", {
+        opacity: 0,
+        x: -20,
+        stagger: 0.08,
+        duration: 0.4,
+        ease: "power2.out",
+      });
     });
+  } else {
+    mobileCtx?.revert();
+    mobileCtx = null;
   }
 }
 
@@ -62,9 +80,11 @@ const links = [
 ];
 
 function scrollToSection(id: string) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" });
+  const { $lenis } = useNuxtApp();
+  if ($lenis) {
+    $lenis.scrollTo(`#${id}`, { offset: -64, duration: 1.2 });
+  } else {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }
 
   if (isMenuOpen.value) {

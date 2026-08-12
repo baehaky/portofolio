@@ -7,13 +7,22 @@ gsap.registerPlugin(ScrollTrigger);
 const el = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-  gsap.from(el.value, {
-    opacity: 0,
-    y: 10,
-    duration: 0.5,
-    ease: "power2.out",
-    clearProps: "all",
+  const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+    mm.reducedMotion = "reduce";
+
+    mm.add("(min-width: 1px)", () => {
+      gsap.from(el.value, {
+        opacity: 0,
+        y: 10,
+        duration: 0.5,
+        ease: "power2.out",
+        clearProps: "all",
+      });
+    });
   });
+
+  onUnmounted(() => ctx.revert());
 });
 </script>
 

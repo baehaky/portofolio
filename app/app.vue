@@ -18,7 +18,7 @@ onMounted(() => {
 html {
   scroll-behavior: smooth;
 }
-* {
+body {
   font-family: "Inter", sans-serif;
 }
 </style>

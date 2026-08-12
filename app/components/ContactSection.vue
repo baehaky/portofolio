@@ -8,6 +8,9 @@ const config = useRuntimeConfig();
 
 const formStore = useFormStore();
 const turnstileToken = ref("");
+const sectionRef = ref<HTMLElement | null>(null);
+
+useGsapReveal(sectionRef);
 
 const status = ref<"idle" | "sending" | "success" | "error">("idle");
 
@@ -54,6 +57,7 @@ async function sendEmail() {
 
 <template>
   <div
+    ref="sectionRef"
     class="min-h-screen bg-white dark:bg-[#06060a] relative z-20 transition-colors duration-300"
   >
     <div
@@ -93,7 +97,7 @@ async function sendEmail() {
     <div
       class="relative z-10 container mx-auto px-6 sm:px-10 lg:px-20 py-24 md:py-32 max-w-5xl"
     >
-      <div class="mb-16">
+      <div class="mb-16" data-reveal>
         <p
           class="text-[11px] tracking-[0.2em] uppercase font-medium text-neutral-400 dark:text-white/25 mb-4"
         >
@@ -122,7 +126,7 @@ async function sendEmail() {
       </div>
 
       <div class="grid lg:grid-cols-[1fr_1.6fr] gap-16 lg:gap-24">
-        <div class="space-y-10">
+        <div class="space-y-10" data-reveal>
           <div
             v-for="item in [
               {
@@ -201,7 +205,7 @@ async function sendEmail() {
           </div>
         </div>
 
-        <div>
+        <div data-reveal>
           <form @submit.prevent="sendEmail" class="space-y-4" novalidate>
             <div class="grid sm:grid-cols-2 gap-4">
               <div>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const currentyear: number = new Date().getFullYear();
 
+const rootRef = ref<HTMLElement | null>(null);
+
+useGsapReveal(rootRef);
+
 interface socialMedia {
   url: string;
   icon: string;
@@ -32,16 +36,16 @@ const navItems: navItems[] = [
 </script>
 
 <template>
-  <footer class="bg-gray-100 dark:bg-black border-t border-gray-400/40">
+  <footer ref="rootRef" class="bg-gray-100 dark:bg-black border-t border-gray-400/40">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div>
+        <div data-reveal>
           <h3 class="mb-4 font-semibold dark:text-white">Muhamad Baehaky</h3>
           <p class="text-gray-500 dark:text-gray-300">
             Creating beautiful and functional web experiences.
           </p>
         </div>
-        <div>
+        <div data-reveal>
           <h4 class="mb-4 font-semibold dark:text-white">Quick Links</h4>
           <div class="space-y-2 flex flex-col">
             <NuxtLink
@@ -54,7 +58,7 @@ const navItems: navItems[] = [
           </div>
         </div>
 
-        <div>
+        <div data-reveal>
           <h4 class="mb-4 font-semibold dark:text-white">Connect</h4>
           <div class="space-x-4 flex">
             <a
@@ -71,7 +75,7 @@ const navItems: navItems[] = [
           </div>
         </div>
       </div>
-      <div class="mt-8 pt-8 border-t border-gray-400/40 dark:text-gray-300 text-center">
+      <div class="mt-8 pt-8 border-t border-gray-400/40 dark:text-gray-300 text-center" data-reveal>
         <p>© {{ currentyear }} Muhamad Baehaky. All rights reserved.</p>
       </div>
     </div>
