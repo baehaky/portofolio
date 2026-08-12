@@ -31,5 +31,6 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
+    "@vercel/analytics",
   ],
 });
